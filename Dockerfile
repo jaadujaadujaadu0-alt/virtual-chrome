@@ -13,15 +13,28 @@ RUN apt-get update && apt-get install -y \
     x11vnc \
     novnc \
     websockify \
-    chromium-browser \
     net-tools \
+    ca-certificates \
+    fonts-liberation \
+    libnss3 \
+    libxss1 \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libgtk-3-0 \
+    libgbm1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Set up noVNC
-RUN mkdir -p /opt/novnc/utils/websockify \
-    && ln -s /usr/share/novnc /opt/novnc
+# 🔥 Install Chromium manually (NO SNAP)
+RUN wget https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/1095492/chrome-linux.zip \
+    && apt-get update && apt-get install -y unzip \
+    && unzip chrome-linux.zip \
+    && mv chrome-linux /opt/chrome \
+    && ln -s /opt/chrome/chrome /usr/bin/chromium \
+    && rm chrome-linux.zip
 
-# Copy startup script
+# Setup noVNC
+RUN ln -s /usr/share/novnc /opt/novnc
+
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
